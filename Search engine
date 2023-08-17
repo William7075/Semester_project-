@@ -1,0 +1,63 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <unordered_map>
+
+using namespace std;
+
+// Simulated document data
+const vector<string> documents = {
+    "This is the first document.",
+    "The second document is here.",
+    "And this is the third document."
+};
+
+// Indexing function
+unordered_map<string, vector<int>> buildIndex(const vector<string>& docs) {
+    unordered_map<string, vector<int>> index;
+    
+    for (int i = 0; i < docs.size(); ++i) {
+        string doc = docs[i];
+        size_t pos = 0;
+        string word;
+        
+        while ((pos = doc.find(' ')) != string::npos) {
+            word = doc.substr(0, pos);
+            index[word].push_back(i);
+            doc.erase(0, pos + 1);
+        }
+        // Process the last word
+        index[doc].push_back(i);
+    }
+    
+    return index;
+}
+
+// Search function
+vector<int> search(const unordered_map<string, vector<int>>& index, const string& query) {
+    if (index.find(query) != index.end()) {
+        return index.at(query);
+    }
+    return {};
+}
+
+int main() {
+    unordered_map<string, vector<int>> index = buildIndex(documents);
+    
+    string query;
+    cout << "Enter a search query: ";
+    getline(cin, query);
+    
+    vector<int> results = search(index, query);
+    
+    if (results.empty()) {
+        cout << "No results found for query: " << query << endl;
+    } else {
+        cout << "Results for query '" << query << "':" << endl;
+        for (int docIdx : results) {
+            cout << "- Document " << docIdx + 1 << ": " << documents[docIdx] << endl;
+        }
+    }
+    
+    return 0;
+}
